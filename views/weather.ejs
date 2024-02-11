@@ -1,0 +1,178 @@
+<!-- views/weather.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>neWs</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: #d2daff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center; 
+            width: 80%; 
+            margin-left: auto; 
+            margin-right: auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .result-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        button[type="submit"] {
+        background-color: #333;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 15px; 
+    }
+
+    button[type="submit"]:hover {
+        background-color: #555;
+    }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-bottom: 2px solid #aaa;
+            background-color: transparent;
+            transition: border-bottom-color 0.3s ease;
+        }
+        #map {
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <section class="header">
+        <div class="header-main bg-light-pink"> 
+            <div class="container">
+                <div class="col-md-auto">
+                    <nav class="navbar navbar-expand-lg navbar-light w-100" id="header-navbar">
+                        <a class="navbar-brand font-weight-bold" href="/news/<%= userId %>">neWs</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item"><a class="nav-link text-uppercase" data-toggle="none"
+                                        href="/weather/<%= userId %>">Weather</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase" href="/currency/<%= userId %>">Currency</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container mt-4">
+            <form id="weatherForm" action="/weather/<%= userId %>" method="POST">
+                <div class="form-group">
+                    <label for="cityInput">City:</label>
+                    <input type="text" class="form-control" id="cityInput" name="city" placeholder="Enter city" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Get Weather</button>
+            </form>
+            <div class="mt-3" id="weatherResult">
+                <% if (weatherData) { %>
+                    <% if (weatherData.city !== null && weatherData.country !== null) { %>
+                        <h2><%= weatherData.city %>, <%= weatherData.country %></h2>
+                    <% } %>
+                    <% if (weatherData.weatherIcon !== null) { %>
+                        <img src="http://openweathermap.org/img/w/<%= weatherData.weatherIcon %>.png" alt="Weather Icon">
+                    <% } %>                    
+                    <% if (weatherData.temperature !== null) { %>
+                        <p>Temperature: <%= weatherData.temperature %>°C</p>
+                    <% } %>
+                    <% if (weatherData.feelsLike !== null) { %>
+                        <p>Feels Like: <%= weatherData.feelsLike %>°C</p>
+                    <% } %>
+                    <% if (weatherData.description !== null) { %>
+                        <p>Description: <%= weatherData.description %></p>
+                    <% } %>
+                    <% if (weatherData.humidity !== null) { %>
+                        <p>Humidity: <%= weatherData.humidity %>%</p>
+                    <% } %>
+                    <% if (weatherData.pressure !== null) { %>
+                        <p>Pressure: <%= weatherData.pressure %> hPa</p>
+                    <% } %>
+                    <% if (weatherData.windSpeed !== null) { %>
+                        <p>Wind Speed: <%= weatherData.windSpeed %> m/s</p>
+                    <% } %>
+                <% } else { %>
+                    <p>No weather data available.</p>
+                <% } %>
+            </div>
+            <div id="map" style="height: 400px;"></div>            
+        </div>
+    </section>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+       document.addEventListener('DOMContentLoaded', function () {
+        const weatherData = <%- JSON.stringify(weatherData) %>;
+        console.log('Weather Data:', weatherData);
+        let lat = 0;
+        let lon = 0;
+        if (weatherData.coordinates) {
+            const coordinates = weatherData.coordinates.replace(/[()]/g, '').split(',');
+            lat = parseFloat(coordinates[0].trim());
+            lon = parseFloat(coordinates[1].trim());
+            console.log('Parsed Coordinates:', lat, lon);
+        } else {
+            console.log('No coordinates found in weather data.');
+        }
+        const map = L.map('map').setView([lat, lon], 10);
+        console.log('Map:', map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.marker([lat, lon]).addTo(map);
+    });
+
+    </script>
+    
+
+    <footer class="footer">
+        <div class="container">
+            <p>Zhansaya Musabekova | SE-2206</p>
+        </div>
+    </footer>
+
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
