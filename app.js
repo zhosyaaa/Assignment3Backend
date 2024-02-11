@@ -25,7 +25,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const News = require('./models/News')
-const Currency = require('./models/currency');
+const Currency = require('./models/Currency');
 const User = require('./models/User');
 const WeatherData = require('./models/WeatherData')
 
