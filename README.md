@@ -23,7 +23,7 @@ neWs is a web application that provides information about weather, currency conv
 - The server runs on port 3000.
 - Access the weather in a web browser via the link `http://localhost:3000/weather/:userId`.
 - Calculate the dollar exchange rate for any other currency using the link `http://localhost:3000/currency/:userId`.
-- ``http://localhost:3000/news/:userId`: for getting news
+- `http://localhost:3000/news/:userId`: for getting news
 - `http://localhost:3000`: login or register
 - `http://localhost:3000/admin/:userId`: admin page
 
