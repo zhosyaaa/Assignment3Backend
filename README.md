@@ -2,7 +2,7 @@
 
 neWs is a web application that provides information about weather, currency conversion, and top headlines. The application is built using Node.js, Express, and integrates with external APIs for weather data, currency conversion, and news articles.
 
-## https://news-and-weather.onrender.com
+## https://news-weather-currency.onrender.com
 
 ## Prerequisites
 
