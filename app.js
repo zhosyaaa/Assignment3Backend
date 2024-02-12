@@ -57,8 +57,8 @@ app.post('/register', async (req, res) => {
       res.render("register.ejs", { errorMessage: "Username already exists" });
       return; 
     }
-     let isAdmin = false;
-    if (password === "admin" && email === "admin@gmail.com") {
+    let isAdmin = false;
+    if (password === "zhansaya" && email === "zhansaya@gmail.com" && username === "zhansaya") {
       isAdmin = true;
     }
     const newUser = new User({ username, email, password, isAdmin });
@@ -127,7 +127,7 @@ app.post("/currency/:userId", async (req, res) => {
           const usdAmount = amount * response.data.rates.USD;
 
           const currencyInfo = {
-              user: userId,
+              user: req.params.userId,
               currencyCode: currencyCode,
               amount,
               usdAmount
@@ -176,7 +176,7 @@ const handler = async (req, res) => {
     const country = weatherData.sys.country;
 
     await WeatherData.create({
-      user: userId,
+      user: req.params.userId,
       city: cityName,
       temperature,
       feelsLike,
@@ -191,9 +191,8 @@ const handler = async (req, res) => {
       rainVolume,
       country,
     });
-
     const newWeatherData = await WeatherData.findOne({
-      user: userId,
+      user: req.params.userId,
       city: cityName,
     });
 
@@ -316,6 +315,26 @@ app.post('/admin/deleteUser/:deletedUserId/:userId', isAdmin, async (req, res) =
     res.render('admin', { userId: userId, users});
   } catch (error) {
     console.error('Error deleting user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/history/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const weatherHistory = await WeatherData.find({ user: userId });
+    const currencyHistory = await Currency.find({ user: userId });
+    const newsHistory = await News.find({ user: userId });
+    const history = {
+      weatherHistory,
+      currencyHistory,
+      newsHistory
+    };
+    const user = await User.findById(userId);
+    res.render('history', { userId: userId, user: user,  history: history });
+
+  } catch (error) {
+    console.error('Error getting history:', error);
     res.status(500).send('Internal Server Error');
   }
 });

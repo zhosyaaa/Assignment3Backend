@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-header {
+            cursor: pointer;
+            font-weight: bold;
+            color: blue;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background-color: #d2daff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center; 
+            width: 80%; 
+            margin-left: auto; 
+            margin-right: auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .result-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        button[type="submit"] {
+        background-color: #333;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 15px; 
+    }
+
+    button[type="submit"]:hover {
+        background-color: #555;
+    }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-bottom: 2px solid #aaa;
+            background-color: transparent;
+            transition: border-bottom-color 0.3s ease;
+        }
+        
+    </style>
+</head>
+<body>
+    <section class="header">
+        <div class="header-main bg-light-pink"> 
+            <div class="container">
+                <div class="col-md-auto">
+                    <nav class="navbar navbar-expand-lg navbar-light w-100" id="header-navbar">
+                        <a class="navbar-brand font-weight-bold" href="/news/<%= userId %>">neWs</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item"><a class="nav-link text-uppercase" data-toggle="none"
+                                        href="/weather/<%= userId %>">Weather</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase" href="/currency/<%= userId %>">Currency</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-uppercase" href="/history/<%= userId %>">History</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container py-5">
+        <h1> History for the user: <%= user.username %></h1>
+
+        <div class="accordion" id="accordionExample">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingWeather">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWeather" aria-expanded="true" aria-controls="collapseWeather">
+                        Weather history
+                    </button>
+                </h2>
+                <div id="collapseWeather" class="accordion-collapse collapse show" aria-labelledby="headingWeather" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <ul>
+                            <% history.weatherHistory.slice(0, 3).forEach(function(weather) { %>
+                                <li><%= weather.city %> - Temperature: <%= weather.temperature %>°C</li>
+                            <% }); %>
+                        </ul>
+                        <% if (history.weatherHistory.length > 3) { %>
+                            <button class="btn btn-primary" onclick="showAll('weather')">Show all</button>
+                        <% } %>
+                        <ul id="weatherFull" class="mt-3" style="display: none;">
+                            <% history.weatherHistory.forEach(function(weather) { %>
+                                <li><%= weather.city %> - Temperature: <%= weather.temperature %>°C</li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCurrency">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCurrency" aria-expanded="true" aria-controls="collapseCurrency">
+                        Currency History
+                    </button>
+                </h2>
+                <div id="collapseCurrency" class="accordion-collapse collapse show" aria-labelledby="headingCurrency" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <ul>
+                            <% history.currencyHistory.slice(0, 3).forEach(function(currency) { %>
+                                <li><%= currency.amount %> <%= currency.currencyCode %> = <%= currency.usdAmount %> USD</li>
+                            <% }); %>
+                        </ul>
+                        <% if (history.currencyHistory.length > 3) { %>
+                            <button class="btn btn-primary" onclick="showAll('currency')">Show all</button>
+                        <% } %>
+                        <ul id="currencyFull" class="mt-3" style="display: none;">
+                            <% history.currencyHistory.forEach(function(currency) { %>
+                                <li><%= currency.amount %> <%= currency.currencyCode %> = <%= currency.usdAmount %> USD</li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingNews">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNews" aria-expanded="true" aria-controls="collapseNews">
+                        News history
+                    </button>
+                </h2>
+                <div id="collapseNews" class="accordion-collapse collapse show" aria-labelledby="headingNews" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <ul>
+                            <% history.newsHistory.slice(0, 3).forEach(function(newsGroup) { %>
+                                <li>
+                                    <h3>Newsgroup:</h3>
+                                    <ul>
+                                        <% newsGroup.news.forEach(function(news) { %>
+                                            <li><a href="<%= news.url %>"><%= news.title %></a></li>
+                                        <% }); %>
+                                    </ul>
+                                </li>
+                            <% }); %>
+                        </ul>
+                        <% if (history.newsHistory.length > 3) { %>
+                            <button class="btn btn-primary" onclick="showAll('news')">Show all</button>
+                        <% } %>
+                        <ul id="newsFull" class="mt-3" style="display: none;">
+                            <% history.newsHistory.forEach(function(newsGroup) { %>
+                                <li>
+                                    <h3>Newsgroup:</h3>
+                                    <ul>
+                                        <% newsGroup.news.forEach(function(news) { %>
+                                            <li><a href="<%= news.url %>"><%= news.title %></a></li>
+                                        <% }); %>
+                                    </ul>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showAll(sectionId) {
+            var fullSectionId = sectionId + 'Full';
+            document.getElementById(fullSectionId).style.display = 'block';
+        }
+    </script>
+    
+</body>
+</html>

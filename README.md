@@ -4,8 +4,6 @@ neWs is a web application that provides information about weather, currency conv
 
 ## https://news-and-weather.onrender.com
 
-
-
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) installed on your machine.
@@ -23,12 +21,16 @@ neWs is a web application that provides information about weather, currency conv
 
 ## Usage
 - The server runs on port 3000.
-- Access the weather in a web browser via the link `http://localhost:3000/weather`.
-- Calculate the dollar exchange rate for any other currency using the link `http://localhost:3000/currency`.
+- Access the weather in a web browser via the link `http://localhost:3000/weather/:userId`.
+- Calculate the dollar exchange rate for any other currency using the link `http://localhost:3000/currency/:userId`.
+- ``http://localhost:3000/news/:userId`: for getting news
+- `http://localhost:3000`: login or register
+- `http://localhost:3000/admin/:userId`: admin page
 
 ## Admin information:
-- email: admin@gmail.com
-- password: admin
+- username: zhansaya
+- email: zhansaya@gmail.com
+- password: zhansaya
 
 ## Dependencies
 - **Express:** Used for server setup and routing.
@@ -47,3 +49,4 @@ The server script is located in `app.js`. Start the server using `nodemon app.js
 
 ## File Structure
 - `views/`: Contains client-side files (ejs).
+- `models/`/: For mongoose schemas
